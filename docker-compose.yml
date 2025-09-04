@@ -2,35 +2,37 @@ version: "3.9"
 
 services:
   squid1:
-    image: sameersbn/squid:latest
+    image: squid:latest
     container_name: squid1
-    restart: always
     ports:
-      - "15001-15100:15001-15100"
-    volumes:
-      - ./squid1/conf:/etc/squid
-      - ./squid1/cache:/var/spool/squid
+      - "15001:3128"
+      - "15002:3129"
+      - "15003:3130"
     environment:
-      - SQUID_AUTH=basic
-      - SQUID_USERS=phanurat:1111
-    ulimits:
-      nofile:
-        soft: 65535
-        hard: 65535
+      - SQUID_USER=${SQUID_USER}
+      - SQUID_PASSWORD=${SQUID_PASSWORD}
+    volumes:
+      - ./instance1/conf/squid.conf:/etc/squid/squid.conf:ro
+      - ./instance1/cache:/var/spool/squid
+    entrypoint: >
+      /bin/bash -c "
+      htpasswd -bc /etc/squid/passwd $SQUID_USER $SQUID_PASSWORD &&
+      squid -N -f /etc/squid/squid.conf"
 
   squid2:
-    image: sameersbn/squid:latest
+    image: squid:latest
     container_name: squid2
-    restart: always
     ports:
-      - "15101-15200:15101-15200"
-    volumes:
-      - ./squid2/conf:/etc/squid
-      - ./squid2/cache:/var/spool/squid
+      - "15004:3128"
+      - "15005:3129"
+      - "15006:3130"
     environment:
-      - SQUID_AUTH=basic
-      - SQUID_USERS=phanurat:1111
-    ulimits:
-      nofile:
-        soft: 65535
-        hard: 65535
+      - SQUID_USER=${SQUID_USER}
+      - SQUID_PASSWORD=${SQUID_PASSWORD}
+    volumes:
+      - ./instance2/conf/squid.conf:/etc/squid/squid.conf:ro
+      - ./instance2/cache:/var/spool/squid
+    entrypoint: >
+      /bin/bash -c "
+      htpasswd -bc /etc/squid/passwd $SQUID_USER $SQUID_PASSWORD &&
+      squid -N -f /etc/squid/squid.conf"
