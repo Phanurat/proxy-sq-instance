@@ -9,10 +9,13 @@ services:
       - "15002:3129"
       - "15003:3130"
     environment:
-      - SQUID_USER=${SQUID_USER}
-      - SQUID_PASSWORD=${SQUID_PASSWORD}
+      SQUID_USER: ${SQUID_USER}
+      SQUID_PASSWORD: ${SQUID_PASSWORD}
     volumes:
+      - ./instance1/conf/squid.conf:/etc/squid/squid.conf:ro
       - ./instance1/cache:/var/spool/squid
+    command: >
+      /bin/bash -c "htpasswd -bc /etc/squid/passwd $SQUID_USER $SQUID_PASSWORD 2>/dev/null || true && squid -N -f /etc/squid/squid.conf"
 
   squid2:
     build: ./instance2
@@ -22,7 +25,10 @@ services:
       - "15005:3129"
       - "15006:3130"
     environment:
-      - SQUID_USER=${SQUID_USER}
-      - SQUID_PASSWORD=${SQUID_PASSWORD}
+      SQUID_USER: ${SQUID_USER}
+      SQUID_PASSWORD: ${SQUID_PASSWORD}
     volumes:
+      - ./instance2/conf/squid.conf:/etc/squid/squid.conf:ro
       - ./instance2/cache:/var/spool/squid
+    command: >
+      /bin/bash -c "htpasswd -bc /etc/squid/passwd $SQUID_USER $SQUID_PASSWORD 2>/dev/null || true && squid -N -f /etc/squid/squid.conf"
