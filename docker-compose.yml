@@ -2,27 +2,37 @@ version: "3.9"
 
 services:
   squid1:
-    image: sameersbn/squid:4.13-2
+    image: dperson/squid
     container_name: squid1
     ports:
       - "15001:3128"
       - "15002:3129"
       - "15003:3130"
-    env_file:
-      - .env
+    environment:
+      - SQUID_USER=${SQUID_USER}
+      - SQUID_PASSWORD=${SQUID_PASSWORD}
     volumes:
       - ./instance1/conf/squid.conf:/etc/squid/squid.conf:ro
       - ./instance1/cache:/var/spool/squid
+    entrypoint: >
+      /bin/bash -c "
+      htpasswd -bc /etc/squid/passwd $SQUID_USER $SQUID_PASSWORD &&
+      squid -N -f /etc/squid/squid.conf"
 
   squid2:
-    image: sameersbn/squid:4.13-2
+    image: dperson/squid
     container_name: squid2
     ports:
       - "15004:3128"
       - "15005:3129"
       - "15006:3130"
-    env_file:
-      - .env
+    environment:
+      - SQUID_USER=${SQUID_USER}
+      - SQUID_PASSWORD=${SQUID_PASSWORD}
     volumes:
       - ./instance2/conf/squid.conf:/etc/squid/squid.conf:ro
       - ./instance2/cache:/var/spool/squid
+    entrypoint: >
+      /bin/bash -c "
+      htpasswd -bc /etc/squid/passwd $SQUID_USER $SQUID_PASSWORD &&
+      squid -N -f /etc/squid/squid.conf"
