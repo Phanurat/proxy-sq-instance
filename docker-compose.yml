@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  squid1:
+    image: sameersbn/squid:latest
+    container_name: squid1
+    restart: always
+    ports:
+      - "15001-15100:15001-15100"
+    volumes:
+      - ./squid1/conf:/etc/squid
+      - ./squid1/cache:/var/spool/squid
+    environment:
+      - SQUID_AUTH=basic
+      - SQUID_USERS=phanurat:1111
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  squid2:
+    image: sameersbn/squid:latest
+    container_name: squid2
+    restart: always
+    ports:
+      - "15101-15200:15101-15200"
+    volumes:
+      - ./squid2/conf:/etc/squid
+      - ./squid2/cache:/var/spool/squid
+    environment:
+      - SQUID_AUTH=basic
+      - SQUID_USERS=phanurat:1111
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
